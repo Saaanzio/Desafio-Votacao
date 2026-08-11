@@ -30,7 +30,6 @@ public class SessaoService {
         Sessao sessao = new Sessao(pauta, agora, agora.plusMinutes(duracao));
 
         return sessaoRepository.save(sessao);
-
     }
 
     public Sessao buscarSessaoPorId(Long id){
@@ -42,5 +41,10 @@ public class SessaoService {
             return DURACAO_PADRAO_MINUTOS;
         }
         return duracaoMinutos;
+    }
+
+    public boolean estaEncerrada(Long sessaoId) {
+        Sessao sessao = buscarSessaoPorId(sessaoId);
+        return LocalDateTime.now().isBefore(sessao.getDataFechamento());
     }
 }

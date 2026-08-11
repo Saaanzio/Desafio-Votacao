@@ -11,5 +11,17 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  api:
+    build: .
+    container_name: votacao-api
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/votacao
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
 volumes:
   postgres_data:

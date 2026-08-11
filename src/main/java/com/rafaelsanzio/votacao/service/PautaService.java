@@ -1,6 +1,5 @@
 package com.rafaelsanzio.votacao.service;
 
-import com.rafaelsanzio.votacao.dto.request.PautaRequest;
 import com.rafaelsanzio.votacao.exception.RecursoNaoEncontradoException;
 import com.rafaelsanzio.votacao.model.Pauta;
 import com.rafaelsanzio.votacao.repository.PautaRepository;

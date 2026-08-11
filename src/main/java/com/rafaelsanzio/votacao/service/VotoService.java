@@ -1,6 +1,7 @@
 package com.rafaelsanzio.votacao.service;
 
-import com.rafaelsanzio.votacao.dto.response.ResultadoSessaoResponse;
+import com.rafaelsanzio.votacao.dto.response.ResultadoVotacaoResponse;
+import com.rafaelsanzio.votacao.exception.SessaoAindaAbertaException;
 import com.rafaelsanzio.votacao.exception.SessaoFechadaException;
 import com.rafaelsanzio.votacao.exception.VotoDuplicadoException;
 import com.rafaelsanzio.votacao.model.Sessao;
@@ -11,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -36,13 +36,13 @@ public class VotoService {
         return votoRepository.save(new Voto(sessao, associadoId, opcaoVoto, agora));
     }
 
-    public ResultadoSessaoResponse buscarResultados(Long sessaoId){
-        long votosSim = votoRepository.countBySessaoIdAndVoto(sessaoId, OpcaoVoto.SIM);
-        long votosNao = votoRepository.countBySessaoIdAndVoto(sessaoId, OpcaoVoto.NAO);
-        return new ResultadoSessaoResponse(sessaoId, votosSim, votosNao);
-
-
-
+    public ResultadoVotacaoResponse buscarResultados(Long sessaoId){
+        if(sessaoService.estaEncerrada(sessaoId)){
+            throw new SessaoAindaAbertaException("Impossível buscar resultados de votos em sessões abertas.");
+        }
+        long votosSim = votoRepository.countBySessaoIdAndOpcao(sessaoId, OpcaoVoto.SIM);
+        long votosNao = votoRepository.countBySessaoIdAndOpcao(sessaoId, OpcaoVoto.NAO);
+        return new ResultadoVotacaoResponse(sessaoId, votosSim, votosNao);
     }
 
 }
