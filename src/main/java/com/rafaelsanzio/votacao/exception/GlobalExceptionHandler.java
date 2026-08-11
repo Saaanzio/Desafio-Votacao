@@ -38,4 +38,21 @@ public class GlobalExceptionHandler {
         ErroResponse erro = new ErroResponse(ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
     }
+
+    @ExceptionHandler(PautaComSessaoAbertaException.class)
+    public ResponseEntity<ErroResponse> handlePautaComSessaoAberta(PautaComSessaoAbertaException ex){
+        ErroResponse erro = new ErroResponse(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(erro);
+    }
+
+    @ExceptionHandler(CpfInvalidoException.class)
+    public ResponseEntity<ErroResponse> handleCpfInvalido(CpfInvalidoException ex){
+        ErroResponse erro = new ErroResponse(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
+    }
+
+    @ExceptionHandler(AssociadoNaoPodeVotarException.class)
+    public ResponseEntity<ErroResponse> handleAssociadoNaoPodeVotar(AssociadoNaoPodeVotarException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErroResponse(ex.getMessage()));
+    }
 }

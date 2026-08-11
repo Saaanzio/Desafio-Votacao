@@ -24,7 +24,7 @@ public class Voto {
     private Sessao sessao;
 
     @Column(nullable = false)
-    private Long associadoId;
+    private String associadoId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -32,7 +32,7 @@ public class Voto {
 
     private LocalDateTime dataVoto;
 
-    public Voto(Sessao sessao, Long associadoId, OpcaoVoto opcao, LocalDateTime dataVoto) {
+    public Voto(Sessao sessao, String associadoId, OpcaoVoto opcao, LocalDateTime dataVoto) {
         this.sessao = sessao;
         this.associadoId = associadoId;
         this.opcao = opcao;

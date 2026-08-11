@@ -1,15 +1,15 @@
 package com.rafaelsanzio.votacao.service;
 
 import com.rafaelsanzio.votacao.exception.RecursoNaoEncontradoException;
+import com.rafaelsanzio.votacao.exception.SessaoAindaAbertaException;
 import com.rafaelsanzio.votacao.model.Pauta;
 import com.rafaelsanzio.votacao.model.Sessao;
 import com.rafaelsanzio.votacao.repository.SessaoRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,9 +24,11 @@ public class SessaoService {
 
     public Sessao abrirSessao(Long pautaId, Integer duracaoMinutos){
         Pauta pauta = pautaService.buscarPautaPorId(pautaId);
-
-        int duracao = calcularDuracao(duracaoMinutos);
         LocalDateTime agora = LocalDateTime.now();
+        if(sessaoRepository.existsByPautaIdAndDataFechamentoAfter(pautaId, agora)){
+            throw new SessaoAindaAbertaException("Já existe uma sessão aberta para esta pauta. Espere seu termino e tente novamente mais tarde.");
+        }
+        int duracao = calcularDuracao(duracaoMinutos);
         Sessao sessao = new Sessao(pauta, agora, agora.plusMinutes(duracao));
 
         return sessaoRepository.save(sessao);
@@ -36,6 +38,10 @@ public class SessaoService {
         return sessaoRepository.findById(id).orElseThrow(() -> new RecursoNaoEncontradoException("Sessão não encontrada com o id " + id));
     }
 
+    public List<Sessao> buscarTodasSessoes(){
+        return sessaoRepository.findAll();
+    }
+
     private int calcularDuracao(Integer duracaoMinutos){
         if(duracaoMinutos == null || duracaoMinutos <= 0){
             return DURACAO_PADRAO_MINUTOS;
@@ -43,7 +49,7 @@ public class SessaoService {
         return duracaoMinutos;
     }
 
-    public boolean estaEncerrada(Long sessaoId) {
+    public boolean estaAberta(Long sessaoId) {
         Sessao sessao = buscarSessaoPorId(sessaoId);
         return LocalDateTime.now().isBefore(sessao.getDataFechamento());
     }

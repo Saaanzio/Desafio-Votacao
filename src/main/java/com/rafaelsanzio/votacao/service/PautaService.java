@@ -6,6 +6,8 @@ import com.rafaelsanzio.votacao.repository.PautaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class PautaService {
@@ -18,5 +20,9 @@ public class PautaService {
 
     public Pauta buscarPautaPorId(Long id){
         return pautaRepository.findById(id).orElseThrow(() -> new RecursoNaoEncontradoException("Pauta não encontrada com o id " + id));
+    }
+
+    public List<Pauta> buscarTodasPautas(){
+        return pautaRepository.findAll();
     }
 }

@@ -2,6 +2,7 @@ package com.rafaelsanzio.votacao.controller;
 
 import com.rafaelsanzio.votacao.dto.request.PautaRequest;
 import com.rafaelsanzio.votacao.dto.response.PautaResponse;
+import com.rafaelsanzio.votacao.dto.response.SessaoResponse;
 import com.rafaelsanzio.votacao.model.Pauta;
 import com.rafaelsanzio.votacao.service.PautaService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,6 +45,15 @@ public class PautaController {
     public ResponseEntity<PautaResponse> buscarPautaPorId(@PathVariable Long id){
         Pauta pauta = pautaService.buscarPautaPorId(id);
         return ResponseEntity.ok(PautaResponse.fromPautaToDto(pauta));
+    }
+
+    @GetMapping
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Pautas encontradas com sucesso."),
+    })
+    @Operation(summary = "Buscar todas as pautas")
+    public ResponseEntity<List<PautaResponse>> buscarTodasPautas(){
+        return ResponseEntity.ok(pautaService.buscarTodasPautas().stream().map(PautaResponse::fromPautaToDto).toList());
     }
 
 

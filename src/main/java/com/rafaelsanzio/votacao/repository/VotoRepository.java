@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface VotoRepository extends JpaRepository<Voto, Long> {
 
-    boolean existsBySessaoIdAndAssociadoId(Long sessaoId, Long associadoId);
+    boolean existsBySessaoIdAndAssociadoId(Long sessaoId, String associadoId);
     Long countBySessaoIdAndOpcao(Long sessaoId, OpcaoVoto opcao);
 }

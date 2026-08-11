@@ -1,6 +1,9 @@
 package com.rafaelsanzio.votacao.service;
 
+import com.rafaelsanzio.votacao.client.CpfClient;
+import com.rafaelsanzio.votacao.client.CpfStatus;
 import com.rafaelsanzio.votacao.dto.response.ResultadoVotacaoResponse;
+import com.rafaelsanzio.votacao.exception.AssociadoNaoPodeVotarException;
 import com.rafaelsanzio.votacao.exception.SessaoAindaAbertaException;
 import com.rafaelsanzio.votacao.exception.SessaoFechadaException;
 import com.rafaelsanzio.votacao.exception.VotoDuplicadoException;
@@ -12,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +25,9 @@ public class VotoService {
 
     private final SessaoService sessaoService;
 
-    public Voto registrarVoto(Long sessaoId, Long associadoId, OpcaoVoto opcaoVoto){
+    private final CpfClient cpfClient;
+
+    public Voto registrarVoto(Long sessaoId, String associadoId, OpcaoVoto opcaoVoto){
         Sessao sessao = sessaoService.buscarSessaoPorId(sessaoId);
         LocalDateTime agora = LocalDateTime.now();
 
@@ -29,6 +35,9 @@ public class VotoService {
             throw new SessaoFechadaException("Sessão " + sessaoId + " está fechada.");
         }
 
+        if(cpfClient.cpfValido(associadoId) == CpfStatus.UNABLE_TO_VOTE){
+            throw new AssociadoNaoPodeVotarException("O associado não pode votar");
+        }
         boolean jaVotou = votoRepository.existsBySessaoIdAndAssociadoId(sessaoId, associadoId);
         if(jaVotou){
             throw new VotoDuplicadoException("Associado de Id "+ associadoId +" já votou nesta sessão.");
@@ -37,12 +46,16 @@ public class VotoService {
     }
 
     public ResultadoVotacaoResponse buscarResultados(Long sessaoId){
-        if(sessaoService.estaEncerrada(sessaoId)){
+        if(sessaoService.estaAberta(sessaoId)){
             throw new SessaoAindaAbertaException("Impossível buscar resultados de votos em sessões abertas.");
         }
         long votosSim = votoRepository.countBySessaoIdAndOpcao(sessaoId, OpcaoVoto.SIM);
         long votosNao = votoRepository.countBySessaoIdAndOpcao(sessaoId, OpcaoVoto.NAO);
         return new ResultadoVotacaoResponse(sessaoId, votosSim, votosNao);
+    }
+
+    public List<Voto> buscarTodosOsVotos(){
+        return votoRepository.findAll();
     }
 
 }

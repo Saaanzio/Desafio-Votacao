@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/sessoes")
@@ -26,7 +28,9 @@ public class SessaoController {
     @PostMapping
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Sessão aberta com sucesso."),
-            @ApiResponse(responseCode = "400", description = "Dados da sessão inválidos.")
+            @ApiResponse(responseCode = "400", description = "Dados da sessão inválidos."),
+            @ApiResponse(responseCode = "409", description = "Já existe uma sessão aberta para esta pauta, tente novamente após o encerramento.")
+
     })
     @Operation(summary = "Abrir uma sessão")
     public ResponseEntity<SessaoResponse> abrirSessao(@RequestBody @Valid SessaoRequest sessaoRequest){
@@ -43,5 +47,14 @@ public class SessaoController {
     public ResponseEntity<SessaoResponse> buscarSessaoPorId(@PathVariable Long id){
         Sessao sessao = sessaoService.buscarSessaoPorId(id);
         return ResponseEntity.ok(SessaoResponse.fromSessaoToDto(sessao));
+    }
+
+    @GetMapping
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Sessões encontradas com sucesso."),
+    })
+    @Operation(summary = "Buscar todas sessões")
+    public ResponseEntity<List<SessaoResponse>> buscarTodasSessoes(){
+        return ResponseEntity.ok(sessaoService.buscarTodasSessoes().stream().map(SessaoResponse::fromSessaoToDto).toList());
     }
 }

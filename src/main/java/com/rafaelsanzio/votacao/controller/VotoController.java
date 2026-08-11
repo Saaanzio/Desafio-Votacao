@@ -2,6 +2,7 @@ package com.rafaelsanzio.votacao.controller;
 
 import com.rafaelsanzio.votacao.dto.request.VotoRequest;
 import com.rafaelsanzio.votacao.dto.response.ResultadoVotacaoResponse;
+import com.rafaelsanzio.votacao.dto.response.SessaoResponse;
 import com.rafaelsanzio.votacao.dto.response.VotoResponse;
 import com.rafaelsanzio.votacao.model.Voto;
 import com.rafaelsanzio.votacao.service.VotoService;
@@ -14,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,6 +47,15 @@ public class VotoController {
     public ResponseEntity<ResultadoVotacaoResponse> buscarResultadoDosVotosPorSessaoId(@PathVariable Long sessaoId){
         ResultadoVotacaoResponse resultadoVotacaoResponse = votoService.buscarResultados(sessaoId);
         return ResponseEntity.ok(resultadoVotacaoResponse);
+    }
+
+    @GetMapping
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Votos encontrados com sucesso."),
+    })
+    @Operation(summary = "Buscar todos os votos")
+    public ResponseEntity<List<VotoResponse>> buscarTodosVotos(){
+        return ResponseEntity.ok(votoService.buscarTodosOsVotos().stream().map(VotoResponse::fromVotoToDto).toList());
     }
 
 }
