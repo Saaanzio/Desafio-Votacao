@@ -2,7 +2,6 @@ package com.rafaelsanzio.votacao.controller;
 
 import com.rafaelsanzio.votacao.dto.request.PautaRequest;
 import com.rafaelsanzio.votacao.dto.response.PautaResponse;
-import com.rafaelsanzio.votacao.dto.response.SessaoResponse;
 import com.rafaelsanzio.votacao.model.Pauta;
 import com.rafaelsanzio.votacao.service.PautaService;
 import io.swagger.v3.oas.annotations.Operation;

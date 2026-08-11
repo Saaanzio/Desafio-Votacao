@@ -23,9 +23,9 @@ public class CpfClienteFake implements CpfClient{
         }
         int resultado = aleatorio.nextInt(100);
         if (resultado < PROBABILIDADE_CPF_INVALIDO){
-             throw new CpfInvalidoException("Cpf Inválido");
+             throw new CpfInvalidoException("Cpf Inválido " + cpf);
          }
-        else if(resultado < PROBABILIDADE_NAO_PODE_VOTAR){
+        else if(resultado < PROBABILIDADE_NAO_PODE_VOTAR + PROBABILIDADE_CPF_INVALIDO){
              return CpfStatus.UNABLE_TO_VOTE;
          }
         else{

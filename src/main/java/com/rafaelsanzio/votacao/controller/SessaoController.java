@@ -1,7 +1,6 @@
 package com.rafaelsanzio.votacao.controller;
 
 import com.rafaelsanzio.votacao.dto.request.SessaoRequest;
-import com.rafaelsanzio.votacao.dto.response.ResultadoVotacaoResponse;
 import com.rafaelsanzio.votacao.dto.response.SessaoResponse;
 import com.rafaelsanzio.votacao.model.Sessao;
 import com.rafaelsanzio.votacao.service.SessaoService;
