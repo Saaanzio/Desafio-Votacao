@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +37,7 @@ public class VotoService {
         if(cpfClient.cpfValido(associadoId) == CpfStatus.UNABLE_TO_VOTE){
             throw new AssociadoNaoPodeVotarException("O associado não pode votar");
         }
-        boolean jaVotou = votoRepository.existsByPautaIdAndAssociadoId(sessao.getPauta().getId(), associadoId);
+        boolean jaVotou = votoRepository.existsBySessaoPautaIdAndAssociadoId(sessao.getPauta().getId(), associadoId);
         if(jaVotou){
             throw new VotoDuplicadoException("Associado de Id "+ associadoId +" já votou nesta sessão.");
         }

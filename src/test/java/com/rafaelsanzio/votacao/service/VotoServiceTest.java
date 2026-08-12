@@ -45,7 +45,7 @@ public class VotoServiceTest {
 
         when(sessaoService.buscarSessaoPorId(1L)).thenReturn(sessaoTeste);
         when(cpfClient.cpfValido("123")).thenReturn(CpfStatus.ABLE_TO_VOTE);
-        when(votoRepository.existsByPautaIdAndAssociadoId(1L, "123")).thenReturn(false);
+        when(votoRepository.existsBySessaoPautaIdAndAssociadoId(1L, "123")).thenReturn(false);
         when(votoRepository.save(any())).thenReturn(votoBanco);
 
         Voto resultado = votoService.registrarVoto(1L, "123", OpcaoVoto.SIM);
@@ -74,7 +74,7 @@ public class VotoServiceTest {
 
         when(sessaoService.buscarSessaoPorId(1L)).thenReturn(sessaoTeste);
         when(cpfClient.cpfValido("123")).thenReturn(CpfStatus.ABLE_TO_VOTE);
-        when(votoRepository.existsByPautaIdAndAssociadoId(1L, "123")).thenReturn(true);
+        when(votoRepository.existsBySessaoPautaIdAndAssociadoId(1L, "123")).thenReturn(true);
 
         assertThrows( VotoDuplicadoException.class, () -> votoService.registrarVoto(1L, "123", OpcaoVoto.SIM));
     }
