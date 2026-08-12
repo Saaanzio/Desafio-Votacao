@@ -36,7 +36,7 @@ public class VotoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(VotoResponse.fromVotoToDto(voto));
     }
 
-    @GetMapping("/resultado/{id}")
+    @GetMapping("/resultado/{sessaoId}")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Resultados encontrados com sucesso."),
             @ApiResponse(responseCode = "400", description = "Dados de sessão inválidos."),
@@ -46,15 +46,6 @@ public class VotoController {
     public ResponseEntity<ResultadoVotacaoResponse> buscarResultadoDosVotosPorSessaoId(@PathVariable Long sessaoId){
         ResultadoVotacaoResponse resultadoVotacaoResponse = votoService.buscarResultados(sessaoId);
         return ResponseEntity.ok(resultadoVotacaoResponse);
-    }
-
-    @GetMapping
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Votos encontrados com sucesso."),
-    })
-    @Operation(summary = "Buscar todos os votos")
-    public ResponseEntity<List<VotoResponse>> buscarTodosVotos(){
-        return ResponseEntity.ok(votoService.buscarTodosOsVotos().stream().map(VotoResponse::fromVotoToDto).toList());
     }
 
 }

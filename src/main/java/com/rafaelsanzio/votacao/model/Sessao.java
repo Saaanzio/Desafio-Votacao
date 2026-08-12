@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "sessoes")
+@Table(name = "sessoes",indexes = @Index(name = "idx_sessoes_pauta_id", columnList = "pauta_id"))
 public class Sessao {
 
     @Id

@@ -38,7 +38,7 @@ public class VotoService {
         if(cpfClient.cpfValido(associadoId) == CpfStatus.UNABLE_TO_VOTE){
             throw new AssociadoNaoPodeVotarException("O associado não pode votar");
         }
-        boolean jaVotou = votoRepository.existsBySessaoIdAndAssociadoId(sessaoId, associadoId);
+        boolean jaVotou = votoRepository.existsByPautaIdAndAssociadoId(sessao.getPauta().getId(), associadoId);
         if(jaVotou){
             throw new VotoDuplicadoException("Associado de Id "+ associadoId +" já votou nesta sessão.");
         }
@@ -52,10 +52,6 @@ public class VotoService {
         long votosSim = votoRepository.countBySessaoIdAndOpcao(sessaoId, OpcaoVoto.SIM);
         long votosNao = votoRepository.countBySessaoIdAndOpcao(sessaoId, OpcaoVoto.NAO);
         return new ResultadoVotacaoResponse(sessaoId, votosSim, votosNao);
-    }
-
-    public List<Voto> buscarTodosOsVotos(){
-        return votoRepository.findAll();
     }
 
 }

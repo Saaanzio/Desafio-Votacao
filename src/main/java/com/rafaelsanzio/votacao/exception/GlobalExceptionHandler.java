@@ -11,44 +11,37 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RecursoNaoEncontradoException.class)
     public ResponseEntity<ErroResponse> handleRecursoNaoEncontrado(RecursoNaoEncontradoException ex){
-        ErroResponse erro = new ErroResponse(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErroResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(SessaoFechadaException.class)
     public ResponseEntity<ErroResponse> handleSessaoFechada(SessaoFechadaException ex){
-        ErroResponse erro = new ErroResponse(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErroResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(VotoDuplicadoException.class)
     public ResponseEntity<ErroResponse> handleVotoDuplicado(VotoDuplicadoException ex){
-        ErroResponse erro = new ErroResponse(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(erro);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErroResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
-        String mensagem = ex.getBindingResult().getFieldErrors().getFirst().getDefaultMessage();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensagem);
+    public ResponseEntity<ErroResponse> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErroResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(SessaoAindaAbertaException.class)
     public ResponseEntity<ErroResponse> handleSessaoAindaAberta(SessaoAindaAbertaException ex){
-        ErroResponse erro = new ErroResponse(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErroResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(PautaComSessaoAbertaException.class)
     public ResponseEntity<ErroResponse> handlePautaComSessaoAberta(PautaComSessaoAbertaException ex){
-        ErroResponse erro = new ErroResponse(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(erro);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErroResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(CpfInvalidoException.class)
     public ResponseEntity<ErroResponse> handleCpfInvalido(CpfInvalidoException ex){
-        ErroResponse erro = new ErroResponse(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErroResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(AssociadoNaoPodeVotarException.class)

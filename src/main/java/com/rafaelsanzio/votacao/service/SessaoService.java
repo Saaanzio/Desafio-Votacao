@@ -1,7 +1,7 @@
 package com.rafaelsanzio.votacao.service;
 
+import com.rafaelsanzio.votacao.exception.PautaComSessaoAbertaException;
 import com.rafaelsanzio.votacao.exception.RecursoNaoEncontradoException;
-import com.rafaelsanzio.votacao.exception.SessaoAindaAbertaException;
 import com.rafaelsanzio.votacao.model.Pauta;
 import com.rafaelsanzio.votacao.model.Sessao;
 import com.rafaelsanzio.votacao.repository.SessaoRepository;
@@ -26,7 +26,7 @@ public class SessaoService {
         Pauta pauta = pautaService.buscarPautaPorId(pautaId);
         LocalDateTime agora = LocalDateTime.now();
         if(sessaoRepository.existsByPautaIdAndDataFechamentoAfter(pautaId, agora)){
-            throw new SessaoAindaAbertaException("Já existe uma sessão aberta para esta pauta. Espere seu termino e tente novamente mais tarde.");
+            throw new PautaComSessaoAbertaException("Já existe uma sessão aberta para esta pauta. Espere seu termino e tente novamente mais tarde.");
         }
         int duracao = calcularDuracao(duracaoMinutos);
         Sessao sessao = new Sessao(pauta, agora, agora.plusMinutes(duracao));
