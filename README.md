@@ -14,7 +14,7 @@ Java 21, Spring Boot, Spring Web MVC, Spring Data JPA, Bean Validation, PostgreS
 - `SPRING_DATASOURCE_URL` -> Padrão: `jdbc:postgresql://localhost:5432/votacao`
 - `SPRING_DATASOURCE_USERNAME` -> Padrão: `postgres`
 - `SPRING_DATASOURCE_PASSWORD` -> Padrão: `postgres`
-- `CPF_VALIDACAO_DESATIVADA` -> Padrão: `false` (Desativa o sorteio aleatório de validez de CPF. Por padrão está opção está DESLIGADA)
+- `CPF_VALIDACAO_DESATIVADA` -> Padrão: `false` (Desativa o sorteio aleatório de validez de CPF (associadoId). Por padrão está opção está DESLIGADA)
 
 ### Subindo com Docker Compose
 Na raiz do projeto /desafio-votacao rode `docker compose up`
@@ -28,6 +28,25 @@ Windows: `.\mvnw.cmd spring-boot:run`
 A aplicação estará na porta `http://localhost:8080/api/v1`
 ### Acessando a documentação Swagger
 Com a aplicação em execução acesse: `http://localhost:8080/api/v1/swagger-ui/index.html`
+
+## Endpoints
+
+Pautas
+- `POST /api/v1/pautas` -> `{ "titulo": "...", "descricao": "..." }`
+- `GET /api/v1/pautas`
+- `GET /api/v1/pautas/{id}`
+
+Sessões
+- `POST /api/v1/sessoes` -> `{ "pautaId": 1, "duracaoEmMinutos": 5 }` (duração opcional, padrão 1 minuto)
+- `GET /api/v1/sessoes`
+- `GET /api/v1/sessoes/{id}`
+
+Votos
+- `POST /api/v1/votos` -> `{ "sessaoId": 1, "associadoId": "12345678900", "voto": "SIM" }` (associadoId é validado pelo `CpfClientFake`)
+- `GET /api/v1/votos/resultado/{sessaoId}`
+
+Exemplos completos estão disponíveis no Swagger.
+
 
 ## Decisões tomadas
 ### Modelagem das entidades (Pauta, Sessão, Voto)
@@ -53,7 +72,7 @@ Testes de carga foram feitos usando k6: o script envia 50.000 votos e calcula o 
 A API utiliza versionamento por URL, com o prefixo `/api/v1`. Uma nova versão pode ser disponibilizada em `/api/v2`.
 ## Testes
 ### Testes unitários
-Foram criados testes unitários para  as regras de negócio dos services, utilizado JUnit 5 e Mockito.
+Foram criados testes unitários para  as regras de negócio dos services e validar os fluxos do controller, utilizado JUnit 5 e Mockito.
 Os testes cobrem:
 - Criação e consulta de Pautas
 - Busca de Pautas Inexistentes
@@ -63,6 +82,9 @@ Os testes cobrem:
 - Bloqueio de voto em sessões encerradas
 - Bloqueio de votos duplicados na mesma pauta
 - Consulta de resultado após o encerramento de uma sessão
+- Criação de pauta pelo endpoint;
+- Abertura de sessão pelo endpoint;
+- Registro de voto pelo endpoint.
 
 Para a execução dos testes, rode:
 
@@ -74,12 +96,19 @@ Linux/WSL: `./mvnw test`
 #### Pré-requisitos:
 - K6 ->
 [Guia de instalação do k6](https://grafana.com/docs/k6/latest/set-up/install-k6/)
+
+- Habilitar `CPF_VALIDACAO_DESATIVADA` (Opcional. Remove as inconsistências causadas pela aleatoriedade do `CpfClientFake`)
 #### Como rodar:
 - Com a aplicação em execução:
 
   ```cd performance-tests ```
 
-   ```k6 run voto-simples.js```
+   ```k6 run teste-k6.js```
+
+## Exemplos de uso
+![img_1.png](img_1.png)
+![img_2.png](img_2.png)
+![img.png](img.png)
 
 ---
 
