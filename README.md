@@ -1,117 +1,116 @@
-# Votação
+# Desafio de Votação
 
-## Objetivo
+## Tecnologias utilizadas
+Java 21, Spring Boot, Spring Web MVC, Spring Data JPA, Bean Validation, PostgreSQL 17, Lombok, Springdoc OpenAPI/Swagger, JUnit 5, Mockito, Docker/Docker Compose e k6.
 
-No cooperativismo, cada associado possui um voto e as decisões são tomadas em assembleias, por votação. Imagine que você deve criar uma solução para dispositivos móveis para gerenciar e participar dessas sessões de votação.
-Essa solução deve ser executada na nuvem e promover as seguintes funcionalidades através de uma API REST:
+## Como executar
+### Pré-requisitos via Docker
+- Apenas o Docker instalado
+### Pré-requisitos para rodar localmente
+- Java 21
+- Maven
+- PostgreSQL 17, com um banco `votacao` criado
+### Variáveis de ambiente
+- `SPRING_DATASOURCE_URL` -> Padrão: `jdbc:postgresql://localhost:5432/votacao`
+- `SPRING_DATASOURCE_USERNAME` -> Padrão: `postgres`
+- `SPRING_DATASOURCE_PASSWORD` -> Padrão: `postgres`
+- `CPF_VALIDACAO_DESATIVADA` -> Padrão: `false` (Desativa o sorteio aleatório de validez de CPF (associadoId). Por padrão está opção está DESLIGADA)
 
-- Cadastrar uma nova pauta
-- Abrir uma sessão de votação em uma pauta (a sessão de votação deve ficar aberta por
-  um tempo determinado na chamada de abertura ou 1 minuto por default)
-- Receber votos dos associados em pautas (os votos são apenas 'Sim'/'Não'. Cada associado
-  é identificado por um id único e pode votar apenas uma vez por pauta)
-- Contabilizar os votos e dar o resultado da votação na pauta
+### Subindo com Docker Compose
+Na raiz do projeto /desafio-votacao rode `docker compose up`
 
-Para fins de exercício, a segurança das interfaces pode ser abstraída e qualquer chamada para as interfaces pode ser considerada como autorizada. A solução deve ser construída em java, usando Spring-boot, mas os frameworks e bibliotecas são de livre escolha (desde que não infrinja direitos de uso).
+### Subindo localmente
+Linux/WSL: `./mvnw spring-boot:run`
 
-É importante que as pautas e os votos sejam persistidos e que não sejam perdidos com o restart da aplicação.
+Windows: `.\mvnw.cmd spring-boot:run`
 
-O foco dessa avaliação é a comunicação entre o backend e o aplicativo mobile. Essa comunicação é feita através de mensagens no formato JSON, onde essas mensagens serão interpretadas pelo cliente para montar as telas onde o usuário vai interagir com o sistema. A aplicação cliente não faz parte da avaliação, apenas os componentes do servidor. O formato padrão dessas mensagens será detalhado no anexo 1.
+### Acessar
+A aplicação estará na porta `http://localhost:8080/api/v1`
+### Acessando a documentação Swagger
+Com a aplicação em execução acesse: `http://localhost:8080/api/v1/swagger-ui/index.html`
 
-## Como proceder
+## Endpoints
 
-Por favor, **CLONE** o repositório e implemente sua solução, ao final, notifique a conclusão e envie o link do seu repositório clonado no GitHub, para que possamos analisar o código implementado.
+Pautas
+- `POST /api/v1/pautas` -> `{ "titulo": "...", "descricao": "..." }`
+- `GET /api/v1/pautas`
+- `GET /api/v1/pautas/{id}`
 
-Lembre de deixar todas as orientações necessárias para executar o seu código.
+Sessões
+- `POST /api/v1/sessoes` -> `{ "pautaId": 1, "duracaoEmMinutos": 5 }` (duração opcional, padrão 1 minuto)
+- `GET /api/v1/sessoes`
+- `GET /api/v1/sessoes/{id}`
 
-### Tarefas bônus
+Votos
+- `POST /api/v1/votos` -> `{ "sessaoId": 1, "associadoId": "12345678900", "voto": "SIM" }` (associadoId é validado pelo `CpfClientFake`)
+- `GET /api/v1/votos/resultado/{sessaoId}`
 
-- Tarefa Bônus 1 - Integração com sistemas externos
-  - Criar uma Facade/Client Fake que retorna aleátoriamente se um CPF recebido é válido ou não.
-  - Caso o CPF seja inválido, a API retornará o HTTP Status 404 (Not found). Você pode usar geradores de CPF para gerar CPFs válidos
-  - Caso o CPF seja válido, a API retornará se o usuário pode (ABLE_TO_VOTE) ou não pode (UNABLE_TO_VOTE) executar a operação. Essa operação retorna resultados aleatórios, portanto um mesmo CPF pode funcionar em um teste e não funcionar no outro.
+Exemplos completos estão disponíveis no Swagger.
 
-```
-// CPF Ok para votar
-{
-    "status": "ABLE_TO_VOTE
-}
-// CPF Nao Ok para votar - retornar 404 no client tb
-{
-    "status": "UNABLE_TO_VOTE
-}
-```
 
-Exemplos de retorno do serviço
+## Decisões tomadas
+### Modelagem das entidades (Pauta, Sessão, Voto)
+Três entidades: `Pauta` (o assunto votado), `Sessão` (o período de votação de
+uma pauta) e `Voto` (o voto de um associado numa sessão).
+### Separação entre DTO e Model
+DTOs foram utilizados para definir os contratos de entrada e saída da API. Os DTOs de request recebem e validam os dados enviados pelo cliente, enquanto os DTOs de response retornam apenas as informações necessárias.
+O Uso de DTOs relacionados a uma entidade de domínio fica restrito a camada de controllers, responsável pela comunicação HTTP. Apenas as camadas de service e respository trabalham diretamente com entidades de domínio.
+### Ausência de Interfaces nos services
+Os services possuem apenas uma implementação e representam regras de negócio da aplicação. Evitando abstrações desnecessárias. Dependências externas, como a `CpfClient`, foram abstraídas por interface.
 
-### Tarefa Bônus 2 - Performance
+## Tarefas bônus
+### Integração com sistema externo (validação de CPF)
+A validação foi feita em `CpfClient`. A implementação simula CPF inválido de forma aleatória, 10% de chance de Cpf inválido, 10% de chance de não poder votar e 80% de chance de ser um Cpf válido. A validação pode ser desativada pela variável `CPF_VALIDACAO_DESATIVADA`.
+### Performance
+Foram adotadas algumas decisões para favorecer as consultas e operações frequentes: índices nas chaves de relacionamento de sessões e dos votos e consultas apenas de existência para verificar voto duplicado e contagem de votos, evitando carregar dados em memória.
 
-- Imagine que sua aplicação possa ser usada em cenários que existam centenas de
-  milhares de votos. Ela deve se comportar de maneira performática nesses
-  cenários
-- Testes de performance são uma boa maneira de garantir e observar como sua
-  aplicação se comporta
+O fechamento da sessão não depende de nenhuma função rodando em segundo plano. A data e hora de fechamento são salvas assim que uma sessão é aberta, cada consulta apenas compara o horário atual com a data de fechamento, evitando jobs checando sessões periodicamente.
 
-### Tarefa Bônus 3 - Versionamento da API
+Testes de carga foram feitos usando k6: o script envia 50.000 votos e calcula o tempo de resposta da aplicação.
 
-○ Como você versionaria a API da sua aplicação? Que estratégia usar?
+### Versionamento da API
+A API utiliza versionamento por URL, com o prefixo `/api/v1`. Uma nova versão pode ser disponibilizada em `/api/v2`.
+## Testes
+### Testes unitários
+Foram criados testes unitários para  as regras de negócio dos services e validar os fluxos do controller, utilizado JUnit 5 e Mockito.
+Os testes cobrem:
+- Criação e consulta de Pautas
+- Busca de Pautas Inexistentes
+- Abertura de sessão com duração informada e padrão
+- Bloqueio de abertura de múltiplas sessões para pauta que já possui sessão aberta
+- Registro de voto
+- Bloqueio de voto em sessões encerradas
+- Bloqueio de votos duplicados na mesma pauta
+- Consulta de resultado após o encerramento de uma sessão
+- Criação de pauta pelo endpoint;
+- Abertura de sessão pelo endpoint;
+- Registro de voto pelo endpoint.
 
-## O que será analisado
+Para a execução dos testes, rode:
 
-- Simplicidade no design da solução (evitar over engineering)
-- Organização do código
-- Arquitetura do projeto
-- Boas práticas de programação (manutenibilidade, legibilidade etc)
-- Possíveis bugs
-- Tratamento de erros e exceções
-- Explicação breve do porquê das escolhas tomadas durante o desenvolvimento da solução
-- Uso de testes automatizados e ferramentas de qualidade
-- Limpeza do código
-- Documentação do código e da API
-- Logs da aplicação
-- Mensagens e organização dos commits
+Windows: `.\mvnw.cmd test`
 
-## Dicas
+Linux/WSL: `./mvnw test`
 
-- Teste bem sua solução, evite bugs
-- Deixe o domínio das URLs de callback passiveis de alteração via configuração, para facilitar
-  o teste tanto no emulador, quanto em dispositivos fisicos.
-  Observações importantes
-- Não inicie o teste sem sanar todas as dúvidas
-- Iremos executar a aplicação para testá-la, cuide com qualquer dependência externa e
-  deixe claro caso haja instruções especiais para execução do mesmo
-  Classificação da informação: Uso Interno
+### Testes de performance (k6)
+#### Pré-requisitos:
+- K6 ->
+[Guia de instalação do k6](https://grafana.com/docs/k6/latest/set-up/install-k6/)
 
-## Anexo 1
+- Habilitar `CPF_VALIDACAO_DESATIVADA` (Opcional. Remove as inconsistências causadas pela aleatoriedade do `CpfClientFake`)
+#### Como rodar:
+- Com a aplicação em execução:
 
-### Introdução
+  ```cd performance-tests ```
 
-A seguir serão detalhados os tipos de tela que o cliente mobile suporta, assim como os tipos de campos disponíveis para a interação do usuário.
+   ```k6 run teste-k6.js```
 
-### Tipo de tela – FORMULARIO
+## Exemplos de uso
+![img_1.png](img_1.png)
+![img_2.png](img_2.png)
+![img.png](img.png)
 
-A tela do tipo FORMULARIO exibe uma coleção de campos (itens) e possui um ou dois botões de ação na parte inferior.
+---
 
-O aplicativo envia uma requisição POST para a url informada e com o body definido pelo objeto dentro de cada botão quando o mesmo é acionado. Nos casos onde temos campos de entrada
-de dados na tela, os valores informados pelo usuário são adicionados ao corpo da requisição. Abaixo o exemplo da requisição que o aplicativo vai fazer quando o botão “Ação 1” for acionado:
-
-```
-POST http://seudominio.com/ACAO1
-{
-    “campo1”: “valor1”,
-    “campo2”: 123,
-    “idCampoTexto”: “Texto”,
-    “idCampoNumerico: 999
-    “idCampoData”: “01/01/2000”
-}
-```
-
-Obs: o formato da url acima é meramente ilustrativo e não define qualquer padrão de formato.
-
-### Tipo de tela – SELECAO
-
-A tela do tipo SELECAO exibe uma lista de opções para que o usuário.
-
-O aplicativo envia uma requisição POST para a url informada e com o body definido pelo objeto dentro de cada item da lista de seleção, quando o mesmo é acionado, semelhando ao funcionamento dos botões da tela FORMULARIO.
-
-# desafio-votacao
+Desenvolvido para o
+desafio técnico de sistema de votação.
