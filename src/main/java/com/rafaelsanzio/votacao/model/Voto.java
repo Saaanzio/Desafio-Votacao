@@ -12,7 +12,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "votos", indexes = @Index(name = "idx_voto_sessao_opcao", columnList = "sessao_id, opcao"))
+@Table(name = "votos", indexes = @Index(name = "idx_voto_sessao_opcao", columnList = "sessao_id, opcao"),
+        uniqueConstraints = @UniqueConstraint(columnNames = {"sessao_id", "associado_id"})
+)
 public class Voto {
 
     @Id
