@@ -1,33 +1,60 @@
-# Desafio de Votação
+# Votação
+
+## Sobre o projeto
+Repositório criado para o Desafio de Votação por Rafael Sanzio.
 
 ## Tecnologias utilizadas
-Java 21, Spring Boot, Spring Web MVC, Spring Data JPA, Bean Validation, PostgreSQL 17, Lombok, Springdoc OpenAPI/Swagger, JUnit 5, Mockito, Docker/Docker Compose e k6.
+- Java 21
+- Spring Boot
+- Spring Web MVC
+- Spring Data JPA
+- Bean Validation
+- PostgreSQL 17
+- Lombok
+- Springdoc OpenAPI/Swagger
+- JUnit 5
+- Mockito
+- Docker
+- k6
 
-## Como executar
-### Pré-requisitos via Docker
-- Apenas o Docker instalado
+## Execução via Docker (recomendado)
+### Pré-requisitos 
+- Docker instalado (Docker Desktop / Docker Engine e Docker Compose)
+
+### Subindo com Docker Compose
+Na raiz do projeto /desafio-votacao rode `docker compose up`
+
+O docker irá iniciar a API e o banco de dados.
+
+## Execução local
 ### Pré-requisitos para rodar localmente
 - Java 21
 - Maven
 - PostgreSQL 17, com um banco `votacao` criado
+
 ### Variáveis de ambiente
 - `SPRING_DATASOURCE_URL` -> Padrão: `jdbc:postgresql://localhost:5432/votacao`
 - `SPRING_DATASOURCE_USERNAME` -> Padrão: `postgres`
 - `SPRING_DATASOURCE_PASSWORD` -> Padrão: `postgres`
 - `CPF_VALIDACAO_DESATIVADA` -> Padrão: `false` (Desativa o sorteio aleatório de validez de CPF (associadoId). Por padrão está opção está DESLIGADA)
 
-### Subindo com Docker Compose
-Na raiz do projeto /desafio-votacao rode `docker compose up`
-
 ### Subindo localmente
 Linux/WSL: `./mvnw spring-boot:run`
 
 Windows: `.\mvnw.cmd spring-boot:run`
 
-### Acessar
+
+
+
+
+
+
+## Acessar
 A aplicação estará na porta `http://localhost:8080/api/v1`
 ### Acessando a documentação Swagger
 Com a aplicação em execução acesse: `http://localhost:8080/api/v1/swagger-ui/index.html`
+
+![img_1.png](assets/img_1.png)
 
 ## Endpoints
 
@@ -106,11 +133,8 @@ Linux/WSL: `./mvnw test`
    ```k6 run teste-k6.js```
 
 ## Exemplos de uso
-![img_1.png](img_1.png)
-![img_2.png](img_2.png)
-![img.png](img.png)
+
+![img_2.png](assets/img_2.png)
+![img.png](assets/img.png)
 
 ---
-
-Desenvolvido para o
-desafio técnico de sistema de votação.
