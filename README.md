@@ -81,7 +81,7 @@ Três entidades: `Pauta` (o assunto votado), `Sessão` (o período de votação 
 uma pauta) e `Voto` (o voto de um associado numa sessão).
 ### Separação entre DTO e Model
 DTOs foram utilizados para definir os contratos de entrada e saída da API. Os DTOs de request recebem e validam os dados enviados pelo cliente, enquanto os DTOs de response retornam apenas as informações necessárias.
-O Uso de DTOs relacionados a uma entidade de domínio fica restrito a camada de controllers, responsável pela comunicação HTTP. Apenas as camadas de service e respository trabalham diretamente com entidades de domínio.
+O Uso de DTOs relacionados a uma entidade de domínio fica restrito a camada de controllers, responsável pela comunicação HTTP. Apenas as camadas de service e repository trabalham diretamente com entidades de domínio.
 ### Ausência de Interfaces nos services
 Os services possuem apenas uma implementação e representam regras de negócio da aplicação. Evitando abstrações desnecessárias. Dependências externas, como a `CpfClient`, foram abstraídas por interface.
 
